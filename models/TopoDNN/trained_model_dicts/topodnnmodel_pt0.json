@@ -1,0 +1,13 @@
+{
+   "outdir": "./trained_models/",
+   "outdictdir": "./trained_model_dicts/",
+   "nodes": "300,102,12,6",
+   "epoch": 40,
+   "label": "_pt0",
+   "batch_size": 96,
+   "data_loc": "../../datasets/topoprocessed/",
+   "drop_pt0": true,
+   "drop_pt": false,
+   "standardize_pt": false,
+   "nconst": 30
+}
