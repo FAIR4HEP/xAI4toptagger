@@ -1,0 +1,11 @@
+{
+   "outdir": "./trained_models/",
+   "outdictdir": "./trained_model_dicts/",
+   "phi_nodes": "100,100,64",
+   "f_nodes": "100,100,100",
+   "epochs": 50,
+   "label": "_latent_64",
+   "batch_size": 250,
+   "data_loc": "../../datasets/",
+   "preprocessed": true
+}
