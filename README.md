@@ -88,7 +88,7 @@ or use the following `bibtex` entry-
 ```
 @article{khot2022detailed,
   title={A Detailed Study of Interpretability of Deep Neural Network based Top Taggers},
-  author={Ayush Khot, Mark S. Neubauer, Avik Roy},
+  author={Khot, Ayush and  Neubauer, Mark S and Roy, Avik},
   journal={arXiv preprint arXiv:2210.04371},
   year={2022}
 }
