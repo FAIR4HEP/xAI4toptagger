@@ -78,17 +78,20 @@ For each model architecture, we have trained a number of alternate variants and 
 The studies associated with explainability of each model are recorded in notebooks hosted in `evaluation/<model-type>` subdirectories. Each notebook is self-contained but **they rely on avaliability of the pretrained models and the datasets in the way they have been setup in the previous section**. The content of each notebook is explained in the `README` file provided within each `evaluation/<model-type>` subdirectory.
 
 # Reference
-The studies in this repository are compiled and explained in the following paper:
-```
-*add link to the paper*
-```
+The studies in this repository are compiled and explained in this paper: [A Detailed Study of Interpretability of Deep Neural Network based Top Taggers](https://arxiv.org/abs/2210.04371)
+
 To cite this work, please add-
 ```
-*add citation*
+A Khot, MS Neubauer, A Roy. A Detailed Study of Interpretability of Deep Neural Network based Top Taggers. arxiv preprint arXiv:2210.04371.
 ```
 or use the following `bibtex` entry-
 ```
-*add bibtex*
+@article{khot2022detailed,
+  title={A Detailed Study of Interpretability of Deep Neural Network based Top Taggers},
+  author={Ayush Khot, Mark S. Neubauer, Avik Roy},
+  journal={arXiv preprint arXiv:2210.04371},
+  year={2022}
+}
 ```
 
 # Source Code
