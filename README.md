@@ -75,7 +75,7 @@ The preprocessed data will be stored in the `n-subjettiness_data` subdirectory.
 For each model architecture, we have trained a number of alternate variants and they are hosted in the `models/<model-type>/trained_models` directories where `model-type` can be `TopoDNN`, `Multi-Body`, or `PFN`. The necessary metadata for each model is given as `json` files in the `models/<model-type>/trained_model_dicts` directories. If you are interested in training your own models, please follow the instructions in the `README` file given within each `<model-type>` subdirectory within the `models` directory.
 
 # Reproducing xAI results
-The studies associated with explainability of each model are recorded in notebooks hosted in `evaluation/<model-type>` subdirectories. Each notebook is self-contained but **they rely on avaliability of the pretrained models and the datasets in the way they have been setup in the previous section**. The content of each notebook is explained in the `README` file provided within each `evaluation/<model-type>` subdirectory.
+The studies associated with explainability of each model are recorded in notebooks hosted in `evaluation/<model-type>` subdirectories. Each notebook is self-contained but **they rely on avaliability of the pretrained models and the datasets in the way they have been setup in the previous section**. The content of each notebook is explained in the `README` file provided in `evaluation/` directory.
 
 # Reference
 The studies in this repository are compiled and explained in this paper: [A Detailed Study of Interpretability of Deep Neural Network based Top Taggers](https://arxiv.org/abs/2210.04371)
