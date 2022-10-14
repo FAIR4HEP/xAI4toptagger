@@ -57,4 +57,4 @@ if __name__ == "__main__":
     with torch.no_grad():
         y = model(x, None)
         print(y)
-    summary(model, ((1, 4, 200), (1, 1, 200)))
+    summary(model, ((1, 200, 4), (1, 1, 200)))
