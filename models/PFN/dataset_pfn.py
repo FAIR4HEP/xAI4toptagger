@@ -39,6 +39,10 @@ class PFNDataset(Dataset):
         jet_px = np.array(df[px_cols].sum(axis=1)).reshape(-1,1)
         jet_py = np.array(df[py_cols].sum(axis=1)).reshape(-1,1)
         jet_pz = np.array(df[pz_cols].sum(axis=1)).reshape(-1,1)
+        jet_pt, jet_eta, jet_phi = get_pt_eta_phi_v(jet_px.flatten(), jet_py.flatten(), jet_pz.flatten())
+        jet_pt = jet_pt.reshape(-1,1)
+        jet_eta = jet_eta.reshape(-1,1)
+        jet_phi = jet_phi.reshape(-1,1)
         jet_m = (np.abs(jet_e**2 - jet_px**2 - jet_py**2 -jet_pz**2))**0.5
         jet_nconst = np.array((df[e_cols] != 0).sum(axis=1)).reshape(-1,1)
         for j in range(n_constits):
