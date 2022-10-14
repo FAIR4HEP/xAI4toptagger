@@ -85,7 +85,9 @@ if __name__ == "__main__":
                             num_workers=40, pin_memory=True, persistent_workers=True)
 
     # model
-    model = Model(features).cuda()
+    model = Model(features,
+                  list(map(int, args.phi_nodes.split(','))),
+                  list(map(int, args.f_nodes.split(',')))).cuda()
     summary(model, ((1, 200, features), (1, 1, 200)))
 
     # loss func and opt
