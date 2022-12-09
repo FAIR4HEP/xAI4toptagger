@@ -99,7 +99,7 @@ if __name__ == "__main__":
         file = pd.HDFStore(data_loc+filename)
         Njets_total = file.get_storer('table').nrows
         nfiles = int(Njets_total/Njets_per_file)
-        for fid in range(2):
+        for fid in range(nfiles):
             print("File index: ", fid)
             npy_jets = h5_to_npy(file, Njets=Njets_per_file, Nstart=fid*Njets_per_file)
             bad_jets = prune_dataset(npy_jets, nsubjet_min = 8)

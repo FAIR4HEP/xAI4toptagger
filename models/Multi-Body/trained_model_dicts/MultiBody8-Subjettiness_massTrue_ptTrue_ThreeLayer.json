@@ -1,0 +1,13 @@
+{
+   "outdir": "./trained_models/",
+   "outdictdir": "./trained_model_dicts/",
+   "nodes": "200,200,50",
+   "epochs": 200,
+   "label": "ThreeLayer",
+   "batch_size": 256,
+   "data_loc": "../../datasets/n-subjettiness_data/",
+   "use_pt": true,
+   "use_mass": true,
+   "tau_x_1": false,
+   "N": 8
+}

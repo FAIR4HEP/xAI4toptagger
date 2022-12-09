@@ -19,6 +19,7 @@ class ParticleFlowNetwork(nn.Module):
 
         super(ParticleFlowNetwork, self).__init__(**kwargs)
         # per-particle functions
+        print(Phi_sizes, F_sizes)
         phi_layers = []
         for i in range(len(Phi_sizes)):
             phi_layers.append(nn.Sequential(
@@ -53,7 +54,7 @@ class ParticleFlowNetwork(nn.Module):
 if __name__ == "__main__":
     features=4
     model = ParticleFlowNetwork().cuda()
-    x = torch.rand(1, 4, 200).cuda()
+    x = torch.rand(1, 200, 4).cuda()
     with torch.no_grad():
         y = model(x, None)
         print(y)
