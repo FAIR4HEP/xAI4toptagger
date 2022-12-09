@@ -47,7 +47,7 @@ To preprocess the data for the `TopoDNN` and `MBNS` models, necessary scripts ar
 cd $PROJPATH/datasets
 python topodnnpreprocessing.py <datasetname>
 ```
-where `datasetname` can be either `train.py`, `val.py`, or `test.py`. The preprocessed data will be stored in the `topoprocessed` subdirectory. For the `MBNS` model, you will need to install the `FastJet` package. 
+where `datasetname` can be either `train.h5`, `val.h5`, or `test.h5`. The preprocessed data will be stored in the `topoprocessed` subdirectory. For the `MBNS` model, you will need to install the `FastJet` package. 
 
 ```
 cd $PROJPATH
