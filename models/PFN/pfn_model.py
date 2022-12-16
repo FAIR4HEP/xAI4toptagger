@@ -11,7 +11,7 @@ class ParticleFlowNetwork(nn.Module):
         Number of output classes.
     """
 
-    def __init__(self, input_dims=4, num_classes=2,
+    def __init__(self, input_dims=3, num_classes=2,
                  Phi_sizes=(100, 100, 256),
                  F_sizes=(100, 100, 100),
                  for_inference=True,
@@ -52,10 +52,11 @@ class ParticleFlowNetwork(nn.Module):
 
 
 if __name__ == "__main__":
-    features=4
-    model = ParticleFlowNetwork().cuda()
-    x = torch.rand(1, 200, 4).cuda()
+    features=3
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = ParticleFlowNetwork(input_dims=features).to(device)
+    x = torch.rand(1, 200, features).to(device)
     with torch.no_grad():
         y = model(x, None)
         print(y)
-    summary(model, ((1, 200, 4), (1, 1, 200)))
+    summary(model, ((1, 200, 3), (1, 1, 200)))

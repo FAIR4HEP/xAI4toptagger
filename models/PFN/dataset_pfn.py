@@ -6,30 +6,14 @@ import pandas as pd
 from torch.utils.data import DataLoader
 import sys
 sys.path.append("../../datasets/")
-sys.path.append('../../fastjet-install/lib/python3.9/site-packages')
 from PreProcessTools import *
-from fastjet import *
+try:
+    from fastjet import *
+except:
+    print("FastJet not found. Make sure FastJet has been installed and the PYTHONPATH variable includes the path to FastJet package library")
+    sys.exit(1)
 
 
-def get_pt_eta_phi_v(px, py, pz):
-    '''Provides pt, eta, and phi given px, py, pz'''
-    # Init variables
-    pt = np.zeros(len(px))
-    pt = np.sqrt(np.power(px,2) + np.power(py,2))
-    phi = np.zeros(len(px))
-    eta = np.zeros(len(px))
-    theta = np.zeros(len(px))
-    x = np.where((px!=0) | (py!=0) | (pz!=0)) # locate where px,py,pz are all 0 
-    theta[x] = np.arctan2(pt[x],pz[x]) 
-    cos_theta = np.cos(theta)
-    y = np.where(np.power(cos_theta,2) < 1)
-    eta[y] = -0.5*np.log((1 - cos_theta[y]) / (1 + cos_theta[y]))
-    z = np.where((px !=0)|(py != 0))
-    phi[z] = np.arctan2(py[z],px[z])
-    return pt, eta, phi                     
-
-
-from fastjet import *
 def processed2tau(x,a,N=8,preprocessed=True):
     # x = preprocessed data of shape (-1, 200, 3) (pt, eta, phi)
     # a = augmented data: (jet_e, jet_m, jet_pt, jet_eta, jet_phi, jet_ptsum, jet_nconst)
@@ -204,9 +188,6 @@ if __name__ == "__main__":
     print(len(mydataset))
     trainloader = DataLoader(mydataset, batch_size=500, shuffle=False, num_workers=40, pin_memory=True, persistent_workers=True)
     for i,(x,m,l,a) in enumerate(trainloader):
-        #print(i)
-        #print(m)
-        #print(l)
         print(x.shape)
         print(m.shape)
         print(l.shape)

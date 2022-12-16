@@ -1,11 +1,11 @@
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
+from sklearn.metrics import accuracy_score
 from multidataset import MultiDataset
 from multimodel import Net as Model
-import numpy as np
-from sklearn.metrics import accuracy_score
+from tqdm import tqdm
 from torchinfo import summary
+import numpy as np
 import argparse
 import json, os, sys
 
@@ -55,6 +55,7 @@ if __name__ == "__main__":
     epochs = args.epochs
     batch_size = args.batch_size
     hidden = list(map(int, args.nodes.split(',')))
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     #used to differentiate different models
     extra_name = args.label
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     
     #LR Scheduler
     use_lr_schedule = True
-    milestones=[75,150,500]
+    milestones=[75,150]
     gamma=0.1
 
     #optimizer parameters
@@ -99,17 +100,12 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True, persistent_workers=True)
 
     # model
-    model = Model(N, use_jet_pt, use_jet_mass, tau_x_1, hidden).cuda()
+    model = Model(N, use_jet_pt, use_jet_mass, tau_x_1, hidden).to(device)
+    
     #num of features
-    features = 3*(N-1)-1
-    if tau_x_1:
-        features = N-1
-    if use_jet_mass:
-        features+=1
-    if use_jet_pt:
-        features+=1
+    features = model.features
     summary(model, (1, features))
-    model = model.double()
+    model = model.float()
 
     # loss func and opt
     crit = torch.nn.BCELoss()
@@ -132,8 +128,8 @@ if __name__ == "__main__":
         for x,y in tqdm(trainloader):
 
             opt.zero_grad()
-            x = x.cuda()
-            y = y.cuda()
+            x = x.to(device)
+            y = y.to(device)
 
             pred = model(x)
             loss = crit(pred, y)
@@ -152,8 +148,8 @@ if __name__ == "__main__":
         model.eval()
         with torch.no_grad():
             for x,y in tqdm(val_loader):
-                x = x.cuda()
-                y = y.cuda()
+                x = x.to(device)
+                y = y.to(device)
                 pred = model(x)
                 loss = crit(pred, y)
 

@@ -49,18 +49,17 @@ class AugParticleFlowNetwork(nn.Module):
         if mask is not None:
             x = x * mask.bool().float()
         x = x.sum(-1)
-        #print(x.shape)
         x = torch.cat((x, aug), 1).float()
-        #print(x.shape)
         return self.fc(x)
 
 
 if __name__ == "__main__":
     features=3
-    model = AugParticleFlowNetwork(input_dims=features)
-    x = torch.rand(1, 200, 3)
-    m = torch.rand(1, 1, 200)
-    a = torch.rand(1, 7)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = AugParticleFlowNetwork(input_dims=features).to(device)
+    x = torch.rand(1, 200, 3).to(device)
+    m = torch.rand(1, 1, 200).to(device)
+    a = torch.rand(1, 7).to(device)
     with torch.no_grad():
         y = model(x, m, a)
         print(y)

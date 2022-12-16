@@ -44,11 +44,10 @@ class MultiDataset(Dataset):
 if __name__ == "__main__":
 
     mydataset = MultiDataset('../../datasets/n-subjettiness_data/test_all.npy')
-    print(len(mydataset))
+    print("Number of data points: ", len(mydataset))
     
     for x,y in tqdm(mydataset):
-        print(x.shape)
-        print(y.shape)
+        print("Input shape: ",  x.shape)
+        print("Output shape: ", y.shape)
         break
         
-        #python multidataset.py

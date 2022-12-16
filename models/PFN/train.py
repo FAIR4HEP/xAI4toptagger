@@ -113,7 +113,6 @@ if __name__ == "__main__":
             all_labels_train.append(y)
             taus = processed2tau(x,a,preprocessed=preprocessed)
             all_taus_train.append(taus[:,:7])
-        #trainloader = zip(all_data_train,all_masks_train,all_labels_train,all_taus_train)
         print("Storing all Validation data!")
         for x,m,y,a in tqdm(val_loader):
             all_data_val.append(x)
@@ -121,12 +120,8 @@ if __name__ == "__main__":
             all_labels_val.append(y)
             taus = processed2tau(x,a,preprocessed=preprocessed)
             all_taus_val.append(taus[:,:7])
-        #val_loader = zip(all_data_val,all_masks_val,all_labels_val,all_taus_val)
         
 
-    # model
-    #print(list(map(int, args.f_nodes.split(','))))
-    #print(list(map(int, args.phi_nodes.split(','))))
     if not args.augmented:
         model = Model(input_dims = features,
                       Phi_sizes = list(map(int, args.phi_nodes.split(','))),

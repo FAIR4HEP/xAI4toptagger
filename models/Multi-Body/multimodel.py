@@ -14,18 +14,6 @@ class Net(nn.Module):
             features+=1
         if use_jet_pt:
             features+=1
-        # if len(hidden) not in [3,4]:
-        #     raise Exception("The model is currently setup to have 3 or 4 layers. Please adjust accordingly!")
-        # self.hidden = hidden
-        # self.dense1 = nn.Linear(features, hidden[0])
-        # self.dense2 = nn.Linear(hidden[0], hidden[1])
-        # self.dense3 = nn.Linear(hidden[1], hidden[2])
-        # if len(hidden) == 4:
-        #     self.dense4 = nn.Linear(hidden[2], hidden[3])
-        #     self.dense5 = nn.Linear(hidden[3], 2)
-        # else:
-        #     self.dense4 = nn.Linear(hidden[2], 50) # This is a dummy layer, won't be used for anything really!
-        #     self.dense5 = nn.Linear(hidden[2], 2)
         layers = [features] + hidden + [2]
         nn_layers = []
         for i in range(1,len(layers)):
@@ -36,40 +24,19 @@ class Net(nn.Module):
                 nn.Dropout(drate) if i < len(layers) - 1 else nn.Identity())
             )
         self._nn = nn.Sequential(*nn_layers)
-        # self.relu = nn.ReLU()
-        # self.dropout1 = nn.Dropout(.1)
-        # self.dropout2 = nn.Dropout(.2)
         self.softmax = nn.Softmax(dim=1)
+        self.features = features
         
     def forward(self, x):
-
-        # x = self.dense1(x)
-        # x = self.relu(x)
-        # x = self.dropout2(x)
-        
-        # x = self.dense2(x)
-        # x = self.relu(x)
-        # x = self.dropout2(x)
-        
-        # x = self.dense3(x)
-        # x = self.relu(x)
-        # x = self.dropout1(x)
-        
-        # if len(self.hidden) == 4:
-        #     x = self.dense4(x)
-        #     x = self.relu(x)
-        #     x = self.dropout1(x)
-
-        # x = self.dense5(x)
-        # x = self.softmax(x)
         return self.softmax(self._nn.forward(x))
     
     
 
 if __name__ == "__main__":
-    features=22
-    model = Net().cuda()
-    x = torch.rand(2, features).cuda()
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = Net().to(device)
+    features = model.features
+    x = torch.rand(2, features).to(device)
     with torch.no_grad():
         y = model(x)
         print(y)

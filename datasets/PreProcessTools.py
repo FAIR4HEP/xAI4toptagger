@@ -5,7 +5,11 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import DataLoader
 import sys, os
-from fastjet import *
+try:
+    from fastjet import *
+except:
+    print("FastJet not found. Make sure FastJet has been installed and the PYTHONPATH variable includes the path to FastJet package library")
+    sys.exit(1)
 
 def h5_to_npy(file, Njets, Nstart = 0):
     jets=np.array(file.select("table",start=Nstart,stop=Nstart+Njets))

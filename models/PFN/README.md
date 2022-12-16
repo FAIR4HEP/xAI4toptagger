@@ -8,17 +8,15 @@ The available options are:
 
 ```
   -h, --help            show this help message and exit
-  --outdir OUTDIR       Output directory for trained model
-  --outdictdir OUTDICTDIR
-                        Output directory for trained model metadata
-  --Phi-nodes PHI_NODES
-                        Comma-separated list of hidden layer nodes for Phi
-  --F-nodes F_NODES     Comma-separated list of hidden layer nodes for F
-  --epochs EPOCHS       Epochs
-  --label LABEL         a label for the model
-  --batch-size BATCH_SIZE
-                        batch_size
-  --data-loc DATA_LOC   Directory for data
+  --outdir		Output directory for trained model
+  --outdictdir		Output directory for trained model metadata
+  --Phi-nodes		Comma-separated list of hidden layer nodes for Phi
+  --F-nodes		Comma-separated list of hidden layer nodes for F
+  --epochs		Number of epochs
+  --label		a label for the model
+  --batch-size		Batch size
+  --data-loc		Directory for data
   --preprocessed        Use Preprocessing on Data
+  --augmented		Use Augmented PFN model
 
 ```
