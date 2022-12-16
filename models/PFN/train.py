@@ -39,7 +39,7 @@ if __name__ == "__main__":
     parser.add_argument("--augmented", action="store_true", dest="augmented", default=False, help="Use Preprocessing on Augmented Model")
     
     args = parser.parse_args()
-    seed_everything(42)
+    #seed_everything(42)
     if not os.path.exists(args.outdir):
         os.mkdir(args.outdir)
     if not os.path.exists(args.outdictdir):
