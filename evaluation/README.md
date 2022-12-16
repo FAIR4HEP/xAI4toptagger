@@ -22,6 +22,7 @@ The different notebooks provided under different subdirectories contain the expl
 ## PFN
 
 - **PFN-Evaluation.ipynb**: Contains basic evaluation of the baseline and variant models by calculating their ROC-AUC score as well as accuracies
+- **AugPFN-Evaluation.ipynb**: Contains basic evaluation of the baseline and variant models by calculating their ROC-AUC score as well as accuracies for the Augmented PFN model
 - **PFN-Explorer.ipynb**: Performs feature ranking using $\Delta$AUC score and MAD Relevance scores for input and latent space features. Obtains latent space feature histograms and correlation matrics
-- **MultiBody-NAP.ipynb**: Performs calculation of RNA scores along with NAP diagrams
-- **MultiBody-PCA.ipynb**: Performs Principal Component Analysis (PCA) on the latent space
+- **PFN-NAP.ipynb**: Performs calculation of RNA scores along with NAP diagrams
+- **PFN-PCA.ipynb**: Performs Principal Component Analysis (PCA) on the latent space
