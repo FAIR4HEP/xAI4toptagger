@@ -1,9 +1,9 @@
 {
    "outdir": "./trained_models/",
    "outdictdir": "./trained_model_dicts/",
-   "nodes": "200,200,50,50",
-   "epochs": 750,
-   "label": "",
+   "nodes": "200",
+   "epochs": 200,
+   "label": "OneLayer",
    "batch_size": 256,
    "data_loc": "../../datasets/n-subjettiness_data/",
    "use_pt": true,

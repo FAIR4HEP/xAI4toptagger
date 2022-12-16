@@ -1,13 +1,13 @@
 import torch
 from torch.utils.data import DataLoader
-from tqdm import tqdm
+from sklearn.metrics import accuracy_score
 from multidataset import MultiDataset
 from multimodel import Net as Model
-import numpy as np
-from sklearn.metrics import accuracy_score
+from tqdm import tqdm
 from torchinfo import summary
+import numpy as np
 import argparse
-import json
+import json, os, sys
 
 def seed_everything(seed: int):
     import random, os
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     parser.add_argument("--outdir", type=str, action="store", dest="outdir", default="./trained_models/", help="Output directory for trained model" )
     parser.add_argument("--outdictdir", type=str, action="store", dest="outdictdir", default="./trained_model_dicts/", help="Output directory for trained model metadata" )
     parser.add_argument("--nodes", type=str, action="store", dest="nodes", default="200,200,50,50", help="Comma-separated list of hidden layer nodes")
-    parser.add_argument("--epochs", type=int, action="store", dest="epochs", default=750, help="Epochs")
+    parser.add_argument("--epochs", type=int, action="store", dest="epochs", default=200, help="Epochs")
     parser.add_argument("--label", type=str, action="store", dest="label", default="", help="a label for the model")
     parser.add_argument("--batch-size", type=int, action="store", dest="batch_size", default=256, help="batch_size")
     parser.add_argument("--data-loc", type=str, action="store", dest="data_loc", default="../../datasets/n-subjettiness_data/", help="Directory for data" )
@@ -40,6 +40,10 @@ if __name__ == "__main__":
     parser.add_argument("-N", type=int, action="store", dest="N", default=8, help="Order of subjettiness variables")
     
     args = parser.parse_args()
+    if not os.path.exists(args.outdir):
+        os.mkdir(args.outdir)
+    if not os.path.exists(args.outdictdir):
+        os.mkdir(args.outdictdir)
     
     #I train on seed 42
     seed_everything(42)
@@ -51,12 +55,13 @@ if __name__ == "__main__":
     epochs = args.epochs
     batch_size = args.batch_size
     hidden = list(map(int, args.nodes.split(',')))
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     #used to differentiate different models
     extra_name = args.label
     if extra_name != '' and not extra_name.startswith('_'):
         extra_name = '_' + extra_name
-    if tau_x_1:
+    if tau_x_1 and 'tau_x_1' not in extra_name:
         extra_name += '_tau_x_1'
     
     model_dict = {}
@@ -70,7 +75,7 @@ if __name__ == "__main__":
     
     #LR Scheduler
     use_lr_schedule = True
-    milestones=[75,200, 500]
+    milestones=[75,150]
     gamma=0.1
 
     #optimizer parameters
@@ -91,21 +96,16 @@ if __name__ == "__main__":
     train_set = MultiDataset(train_path, N, use_jet_pt, use_jet_mass, tau_x_1)
     val_set = MultiDataset(val_path, N, use_jet_pt, use_jet_mass, tau_x_1)
 
-    trainloader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=50, pin_memory=True, persistent_workers=True)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=50, pin_memory=True, persistent_workers=True)
+    trainloader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True, persistent_workers=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True, persistent_workers=True)
 
     # model
-    model = Model(N, use_jet_pt, use_jet_mass, tau_x_1, hidden).cuda()
+    model = Model(N, use_jet_pt, use_jet_mass, tau_x_1, hidden).to(device)
+    
     #num of features
-    features = 3*(N-1)-1
-    if tau_x_1:
-        features = N-1
-    if use_jet_mass:
-        features+=1
-    if use_jet_pt:
-        features+=1
+    features = model.features
     summary(model, (1, features))
-    model = model.double()
+    model = model.float()
 
     # loss func and opt
     crit = torch.nn.BCELoss()
@@ -128,8 +128,8 @@ if __name__ == "__main__":
         for x,y in tqdm(trainloader):
 
             opt.zero_grad()
-            x = x.cuda()
-            y = y.cuda()
+            x = x.to(device)
+            y = y.to(device)
 
             pred = model(x)
             loss = crit(pred, y)
@@ -148,8 +148,8 @@ if __name__ == "__main__":
         model.eval()
         with torch.no_grad():
             for x,y in tqdm(val_loader):
-                x = x.cuda()
-                y = y.cuda()
+                x = x.to(device)
+                y = y.to(device)
                 pred = model(x)
                 loss = crit(pred, y)
 

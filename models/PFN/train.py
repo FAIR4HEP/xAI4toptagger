@@ -1,8 +1,9 @@
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from dataset_pfn import PFNDataset
+from dataset_pfn import PFNDataset, processed2tau
 from pfn_model import ParticleFlowNetwork as Model
+from augmented_pfn_model import AugParticleFlowNetwork as AugModel
 import numpy as np
 from sklearn.metrics import accuracy_score
 from torchinfo import summary
@@ -35,14 +36,23 @@ if __name__ == "__main__":
     parser.add_argument("--batch-size", type=int, action="store", dest="batch_size", default=250, help="batch_size")
     parser.add_argument("--data-loc", type=str, action="store", dest="data_loc", default="../../datasets/", help="Directory for data" )
     parser.add_argument("--preprocessed", action="store_true", dest="preprocessed", default=False, help="Use Preprocessing on Data")
+    parser.add_argument("--augmented", action="store_true", dest="augmented", default=False, help="Use Preprocessing on Augmented Model")
     
     args = parser.parse_args()
-    seed_everything(42)
-    
+    #seed_everything(42)
+    if not os.path.exists(args.outdir):
+        os.mkdir(args.outdir)
+    if not os.path.exists(args.outdictdir):
+        os.mkdir(args.outdictdir)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        
     extra_name = args.label
     if extra_name != "" and not extra_name.startswith('_'):
         extra_name = '_' + extra_name
-    
+    if args.augmented and "aug" not in extra_name:
+        extra_name += '_aug'
+        
     model_dict = {}
     for arg in vars(args):
         model_dict[arg] = getattr(args, arg)
@@ -62,7 +72,7 @@ if __name__ == "__main__":
     gamma=0.1
 
     #optimizer parameters
-    l_rate = 3e-4
+    l_rate = 3e-4 
     opt_weight_decay = 0
 
     #Early stopping parameters
@@ -77,18 +87,53 @@ if __name__ == "__main__":
     val_path = args.data_loc + "/val.h5"
     train_set = PFNDataset(train_path, preprocessed)
     val_set = PFNDataset(val_path, preprocessed)
+
     features = 3
 
     trainloader = DataLoader(train_set, batch_size=args.batch_size, shuffle=True, 
-                             num_workers=40, pin_memory=True, persistent_workers=True)
+                             num_workers=1, pin_memory=True, persistent_workers=True)
     val_loader = DataLoader(val_set, batch_size=args.batch_size, shuffle=True, 
-                            num_workers=40, pin_memory=True, persistent_workers=True)
+                            num_workers=1, pin_memory=True, persistent_workers=True)
 
-    # model
-    model = Model(features,
-                  list(map(int, args.phi_nodes.split(','))),
-                  list(map(int, args.f_nodes.split(',')))).cuda()
-    summary(model, ((1, 200, features), (1, 1, 200)))
+    if args.augmented:
+        all_data_train   = []
+        all_masks_train  = []
+        all_labels_train = []
+        all_augdat_train = []
+        all_taus_train   = []
+        all_data_val   = []
+        all_masks_val  = []
+        all_labels_val = []
+        all_augdat_val = []
+        all_taus_val = []
+        print("Storing all Training data!")
+        for x,m,y,a in tqdm(trainloader):
+            all_data_train.append(x)
+            all_masks_train.append(m)
+            all_labels_train.append(y)
+            taus = processed2tau(x,a,preprocessed=preprocessed)
+            all_taus_train.append(taus[:,:7])
+        print("Storing all Validation data!")
+        for x,m,y,a in tqdm(val_loader):
+            all_data_val.append(x)
+            all_masks_val.append(m)
+            all_labels_val.append(y)
+            taus = processed2tau(x,a,preprocessed=preprocessed)
+            all_taus_val.append(taus[:,:7])
+        
+
+    if not args.augmented:
+        model = Model(input_dims = features,
+                      Phi_sizes = list(map(int, args.phi_nodes.split(','))),
+                      F_sizes   = list(map(int, args.f_nodes.split(','))) ).to(device)
+        summary(model, ((1, 200, features), (1, 1, 200)))
+    else:
+        print("Augmented PFN is being used!")
+        model= AugModel(input_dims = features,
+                        Phi_sizes = list(map(int, args.phi_nodes.split(','))),
+                        F_sizes   = list(map(int, args.f_nodes.split(','))),
+                        aug_size = 7).to(device)
+        summary(model, ((1, 200, features), (1, 1, 200), (1,7)))
 
     # loss func and opt
     crit = torch.nn.CrossEntropyLoss()
@@ -109,14 +154,22 @@ if __name__ == "__main__":
         val_top1_total = 0
         #train loop
         model.train()
-        for x,m,y,_ in tqdm(trainloader):
+        if args.augmented:
+            trainloader = zip(all_data_train,all_masks_train,all_labels_train,all_taus_train)
+            val_loader = zip(all_data_val,all_masks_val,all_labels_val,all_taus_val)
+        for x,m,y,a in tqdm(trainloader):
 
             opt.zero_grad()
-            x = x.cuda()
-            m = m.cuda()
-            y = y.cuda()
+            x = x.to(device)
+            m = m.to(device)
+            y = y.to(device)
+            a = a.to(device)
 
-            pred = model(x,m)
+            if args.augmented:
+                #taus = processed2tau(x,a,preprocessed).to(device)
+                pred = model(x,m,a)
+            else:
+                pred = model(x,m)
             loss = crit(pred, y)
 
             train_loss_total += loss.item()
@@ -131,11 +184,17 @@ if __name__ == "__main__":
         #Early stopping after at least 20 epochs
         model.eval()
         with torch.no_grad():
-            for x,m,y, _ in tqdm(val_loader):
-                x = x.cuda()
-                m = m.cuda()
-                y = y.cuda()
-                pred = model(x,m)
+            for x,m,y, a in tqdm(val_loader):
+                x = x.to(device)
+                m = m.to(device)
+                y = y.to(device)
+                a = a.to(device)
+
+                if args.augmented:
+                    #taus = processed2tau(x,a,precprocessed).to(device)
+                    pred = model(x,m,a)
+                else:
+                    pred = model(x,m)
                 loss = crit(pred, y)
 
                 val_loss_total += loss.item()

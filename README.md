@@ -47,7 +47,7 @@ To preprocess the data for the `TopoDNN` and `MBNS` models, necessary scripts ar
 cd $PROJPATH/datasets
 python topodnnpreprocessing.py <datasetname>
 ```
-where `datasetname` can be either `train.py`, `val.py`, or `test.py`. The preprocessed data will be stored in the `topoprocessed` subdirectory. For the `MBNS` model, you will need to install the `FastJet` package. 
+where `datasetname` can be either `train.h5`, `val.h5`, or `test.h5`. The preprocessed data will be stored in the `topoprocessed` subdirectory. For the `MBNS` model, you will need to install the `FastJet` package. 
 
 ```
 cd $PROJPATH
@@ -72,7 +72,13 @@ python mb8spreprocessing.py
 The preprocessed data will be stored in the `n-subjettiness_data` subdirectory.
 
 # Training your own models
-For each model architecture, we have trained a number of alternate variants and they are hosted in the `models/<model-type>/trained_models` directories where `model-type` can be `TopoDNN`, `Multi-Body`, or `PFN`. The necessary metadata for each model is given as `json` files in the `models/<model-type>/trained_model_dicts` directories. If you are interested in training your own models, please follow the instructions in the `README` file given within each `<model-type>` subdirectory within the `models` directory.
+For each model architecture, we have trained a number of alternate variants and they are hosted in the `models/<model-type>/trained_models` directories where `model-type` can be `TopoDNN`, `Multi-Body`, or `PFN`. The necessary metadata for each model is given as `json` files in the `models/<model-type>/trained_model_dicts` directories. If you are interested in training your own models, please follow the instructions in the `README` file given within each `<model-type>` subdirectory within the `models` directory. Setting up the conda environment with the command `conda activate toptagger_env` should setup the right environment. Training some of the models may require the `FastJet` package for dataloader, so a good idea is to add its path to the `PYTHOPATH` environment variable:
+
+```
+export PROJPATH=$PWD
+PYPATH=`ls -d $PROJPATH/fastjet-install/lib/python3*`
+export PYTHONPATH=$PYTHONPATH:$PYPATH/site-packages
+```
 
 # Reproducing xAI results
 The studies associated with explainability of each model are recorded in notebooks hosted in `evaluation/<model-type>` subdirectories. Each notebook is self-contained but **they rely on avaliability of the pretrained models and the datasets in the way they have been setup in the previous section**. The content of each notebook is explained in the `README` file provided in `evaluation/` directory.
