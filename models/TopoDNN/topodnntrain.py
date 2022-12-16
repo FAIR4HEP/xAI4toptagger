@@ -1,5 +1,4 @@
 import os
-# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import pandas as pd
 import json
 import keras 
@@ -49,18 +48,21 @@ if __name__ == "__main__":
         #Get rid of pt_0 column
         x_train = x_train.loc[:, x_train.columns != 'pt_0']
         x_val = x_val.loc[:, x_val.columns != 'pt_0']
-        mode = '_pt0'
+        if '_pt0' not in mode.strip('_'):
+            mode = mode.strip('_') + '_pt0'
     if args.drop_pt:
         #Get rid of all pt
         pt_cols = [col for col in x_train.columns if 'pt' in col]
         x_train = x_train.drop(pt_cols, axis=1)
         x_val = x_val.drop(pt_cols, axis=1)
-        mode = '_pt'
+        if '_pt' not in mode.strip('_'):
+            mode = mode.strip('_') + '_pt'
     if args.standardize_pt:
         pt_cols = [col for col in x_train.columns if 'pt' in col]
         x_train[pt_cols] = (x_train[pt_cols] - x_train[pt_cols].mean())/x_train[pt_cols].std()
         x_val[pt_cols] = (x_val[pt_cols] - x_val[pt_cols].mean())/x_val[pt_cols].std()
-        mode = '_standardize_pt'
+        if '_standardize_pt' not in mode.strip('_'):
+            mode = mode.strip('_') + '_standardize_pt'
     
     args.label = mode
     model_dict = {}
