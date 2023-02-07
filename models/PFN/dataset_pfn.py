@@ -4,8 +4,9 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 from torch.utils.data import DataLoader
-import sys
+import sys,os
 sys.path.append("../../datasets/")
+sys.path.append(os.path.abspath('../../fastjet-install/lib/python3.9/site-packages'))
 from PreProcessTools import *
 try:
     from fastjet import *
@@ -134,24 +135,24 @@ class PFNDataset(Dataset):
         eta_cols = [col for col in df_pt_eta_phi.columns if 'eta' in col]
         phi_cols = [col for col in df_pt_eta_phi.columns if 'phi' in col]
         pt_cols = [col for col in df_pt_eta_phi.columns if 'pt' in col] 
-        px_cols = [col for col in df.columns if 'PX' in col] 
-        py_cols = [col for col in df.columns if 'PY' in col]
-        pz_cols = [col for col in df.columns if 'PZ' in col]
-        df_jet_pet_eta_phi = pd.DataFrame()
-        df_jet_pet_eta_phi['jet_px'] = df[px_cols].sum(axis=1)
-        df_jet_pet_eta_phi['jet_py'] = df[py_cols].sum(axis=1)
-        df_jet_pet_eta_phi['jet_pz'] = df[pz_cols].sum(axis=1)
+        #px_cols = [col for col in df.columns if 'PX' in col] 
+        #py_cols = [col for col in df.columns if 'PY' in col]
+        #pz_cols = [col for col in df.columns if 'PZ' in col]
+        # df_jet_pet_eta_phi = pd.DataFrame()
+        # df_jet_pet_eta_phi['jet_px'] = df[px_cols].sum(axis=1)
+        # df_jet_pet_eta_phi['jet_py'] = df[py_cols].sum(axis=1)
+        # df_jet_pet_eta_phi['jet_pz'] = df[pz_cols].sum(axis=1)
         #labels, prob_isQCD, prob_isSignal
         self.labels = np.expand_dims(df["is_signal_new"].to_numpy(), axis=0)
         self.labels = np.append(1-self.labels, self.labels, 0)
         
         del df
         if preprocessed:
-            jet_px = np.array(df_jet_pet_eta_phi['jet_px'])
-            jet_py = np.array(df_jet_pet_eta_phi['jet_py'])
-            jet_pz = np.array(df_jet_pet_eta_phi['jet_pz'])
-            del df_jet_pet_eta_phi
-            jet_pt, jet_eta, jet_phi = get_pt_eta_phi_v(jet_px,jet_py,jet_pz)
+            #jet_px = np.array(df_jet_pet_eta_phi['jet_px'])
+            #jet_py = np.array(df_jet_pet_eta_phi['jet_py'])
+            #jet_pz = np.array(df_jet_pet_eta_phi['jet_pz'])
+            #del df_jet_pet_eta_phi
+            jet_pt, jet_eta, jet_phi = get_pt_eta_phi_v(jet_px.flatten(),jet_py.flatten(),jet_pz.flatten())
             #Preprocessing
             jet_ptsum = df_pt_eta_phi[pt_cols].sum(axis=1).to_numpy().reshape(-1,1)
             df_pt_eta_phi[pt_cols]= df_pt_eta_phi[pt_cols].div(df_pt_eta_phi[pt_cols].sum(axis=1), axis=0)
