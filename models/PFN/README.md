@@ -17,6 +17,5 @@ The available options are:
   --batch-size		Batch size
   --data-loc		Directory for data
   --preprocessed        Use Preprocessing on Data
-  --augmented		Use Augmented PFN model
 
 ```
