@@ -1,0 +1,17 @@
+{
+   "outdir": "./trained_models/",
+   "outdictdir": "./trained_model_dicts/",
+   "Np": 60,
+   "n_phiI": 128,
+   "x_mode": "cat",
+   "phi_nodes": "100,100,64",
+   "f_nodes": "64,100,100",
+   "epochs": 50,
+   "label": "v3_cat",
+   "batch_size": 250,
+   "data_loc": "../../datasets/",
+   "preprocessed": true,
+   "augmented": false,
+   "preload": false,
+   "preload_file": ""
+}
